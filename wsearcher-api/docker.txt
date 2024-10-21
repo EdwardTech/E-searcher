@@ -1,0 +1,8 @@
+docker run --name profiles_c \
+    -p 5432:5432 \
+    -e POSTGRES_USER={user}} \
+    -e POSTGRES_PASSWORD={pass}} \
+    -e POSTGRES_DB=profile \
+    -e PGDATA={your_pass_to_storage} \
+    -v "{your_pass_to_outer_volume}}":/var/lib/postgresql/data \
+    -d postgres:latest
