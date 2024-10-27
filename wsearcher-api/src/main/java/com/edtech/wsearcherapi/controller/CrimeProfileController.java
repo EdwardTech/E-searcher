@@ -26,6 +26,12 @@ public class CrimeProfileController {
         return new ResponseEntity<>(profile, HttpStatus.CREATED);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<ResponseProfile> updateProfile(@PathVariable UUID id, @RequestBody RequestProfile dto) throws Exception {
+        ResponseProfile profile = profileService.updateProfile(id, dto);
+        return new ResponseEntity<>(profile, HttpStatus.OK);
+    }
+
     @DeleteMapping
     public ResponseEntity<Void> deleteProfile(@RequestParam UUID id) {
         profileService.deleteProfile(id);

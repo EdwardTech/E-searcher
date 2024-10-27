@@ -5,7 +5,9 @@ import com.edtech.wsearcherapi.model.dto.RequestProfile;
 import com.edtech.wsearcherapi.model.dto.ResponseProfile;
 import com.edtech.wsearcherapi.model.entity.CriminalsProfile;
 import com.edtech.wsearcherapi.repository.ProfileRepository;
+import com.edtech.wsearcherapi.utils.ProfileUtils;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -30,6 +32,18 @@ public class ProfileService {
     public ResponseProfile createProfile(RequestProfile dto) {
         CriminalsProfile profile = this.buildProfile(dto);
         CriminalsProfile newProfile = profileRepository.save(profile);
+        kafkaSender.sendMessage(newProfile.toString());
+
+        return this.buildResponseProfile(newProfile);
+    }
+
+    @Transactional
+    public ResponseProfile updateProfile(UUID id, RequestProfile dto) throws Exception {
+        CriminalsProfile criminalsProfile = profileRepository.findById(id)
+                .orElseThrow(() -> new Exception("Профайл не найден"));
+        BeanUtils.copyProperties(dto, criminalsProfile, ProfileUtils.getNullPropertyNames(dto));
+
+        CriminalsProfile newProfile = profileRepository.save(criminalsProfile);
         kafkaSender.sendMessage(newProfile.toString());
 
         return this.buildResponseProfile(newProfile);
